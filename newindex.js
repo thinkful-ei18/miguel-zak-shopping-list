@@ -48,10 +48,23 @@ function generateShoppingItemsString(shoppingList) {
 
 function handleNewItemSubmit() {
   // this function will be responsible for when users add a new shopping list item
-  console.log('`handleNewItemSubmit` ran');
+  	
+ 
+  $('#js-shopping-list-form').submit(event=>{
+  	event.preventDefault();
+  	const newItemName=$('.js-shopping-list-entry').val();
+  	addItemToShoppingList(newItemName);
+  	renderShoppingList();
+  	console.log('`handleNewItemSubmit` ran');
+  	$('.js-shopping-list-entry').val('');
+  	
+
+  });
 }
 
-
+function addItemToShoppingList(itemName){
+	STORE.push({name: itemName,checked: false});
+};
 function handleItemCheckClicked() {
   // this function will be reponsible for when users click the "check" button on
   // a shopping list item.
