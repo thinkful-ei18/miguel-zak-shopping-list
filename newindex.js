@@ -7,7 +7,6 @@ const STORE = {
     {name: 'milk', checked: true, isEditing: false},
     {name: 'bread', checked: false, isEditing: false}
   ],
-
 };
 
 
@@ -17,12 +16,9 @@ function generateItemElement(item, itemIndex, template) {
   if (item.isEditing === true) {
     itemText = `<form id="js-edit-item-form">
                   <input type="text" name="edit-item-entry" class="js-edit-item-entry" placeholder="New Item Name"></input>
-                <button type="submit"></button><button type="submit"></button>
+                <button type="submit" class="edit-confirm">Yes</button><button class="edit-cancel">No</button>
               </form>`;
   }
-  
-  
-  
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
       <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${itemText}</span>
@@ -38,18 +34,23 @@ function generateItemElement(item, itemIndex, template) {
 }
 
 function handleItemToBeEdited() {
-  $('.js-shopping-item').on('click', event => {
+  $('.js-shopping-list').on('click', '.js-shopping-item', event => {
     console.log('`handleItemToBeEdited` ran');
     const editedItem = getItemIndexFromElement(event.currentTarget);
     STORE.items[editedItem].isEditing = true;
     renderShoppingList();
+  }
+  );}
+
+
+function handleRemoveEditForm() {
+  $('.js-shopping-list').on('click', '.edit-cancel', event => {
+    event.preventDefault();
+    const editedItem = getItemIndexFromElement(event.currentTarget);
+    STORE.items[editedItem].isEditing = false;
+    renderShoppingList();
+    console.log('`handleRemoveEditForm` ran');
   });
-}
-
-function handleInsertEditForm() {
-
-
-
 }
 
 
@@ -134,6 +135,7 @@ function handleShoppingList() {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleItemToBeEdited();
+  handleRemoveEditForm();
 }
 
 // when the page loads, call `handleShoppingList`
