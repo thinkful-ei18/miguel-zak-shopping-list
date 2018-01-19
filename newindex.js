@@ -1,17 +1,31 @@
 'use strict';
 
-const STORE = [
-  {name: 'apples', checked: false},
-  {name: 'oranges', checked: false},
-  {name: 'milk', checked: true},
-  {name: 'bread', checked: false}
-];
+const STORE = {
+  items: [
+    {name: 'apples', checked: false, isEditing: false},
+    {name: 'oranges', checked: false, isEditing: false},
+    {name: 'milk', checked: true, isEditing: false},
+    {name: 'bread', checked: false, isEditing: false}
+  ],
+
+};
+
 
 
 function generateItemElement(item, itemIndex, template) {
+  let itemText = item.name;
+  if (item.isEditing === true) {
+    itemText = `<form id="js-edit-item-form">
+                  <input type="text" name="edit-item-entry" class="js-edit-item-entry" placeholder="New Item Name"></input>
+                <button type="submit"></button><button type="submit"></button>
+              </form>`;
+  }
+  
+  
+  
   return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
-      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
+      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${itemText}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
             <span class="button-label">check</span>
@@ -21,6 +35,21 @@ function generateItemElement(item, itemIndex, template) {
         </button>
       </div>
     </li>`;
+}
+
+function handleItemToBeEdited() {
+  $('.js-shopping-item').on('click', event => {
+    console.log('`handleItemToBeEdited` ran');
+    const editedItem = getItemIndexFromElement(event.currentTarget);
+    STORE.items[editedItem].isEditing = true;
+    renderShoppingList();
+  });
+}
+
+function handleInsertEditForm() {
+
+
+
 }
 
 
@@ -36,7 +65,7 @@ function generateShoppingItemsString(shoppingList) {
 function renderShoppingList() {
   // render the shopping list in the DOM
   console.log('`renderShoppingList` ran');
-  const shoppingListItemsString = generateShoppingItemsString(STORE);
+  const shoppingListItemsString = generateShoppingItemsString(STORE.items);
 
   // insert that HTML into the DOM
   $('.js-shopping-list').html(shoppingListItemsString);
@@ -45,7 +74,7 @@ function renderShoppingList() {
 
 function addItemToShoppingList(itemName) {
   console.log(`Adding "${itemName}" to shopping list`);
-  STORE.push({name: itemName, checked: false});
+  STORE.items.push({name: itemName, checked: false, isEditing: false});
 }
 
 function handleNewItemSubmit() {
@@ -61,7 +90,7 @@ function handleNewItemSubmit() {
 
 function toggleCheckedForListItem(itemIndex) {
   console.log('Toggling checked property for item at index ' + itemIndex);
-  STORE[itemIndex].checked = !STORE[itemIndex].checked;
+  STORE.items[itemIndex].checked = !STORE.items[itemIndex].checked;
 }
 
 
@@ -86,10 +115,12 @@ function handleDeleteItemClicked() {
   $('.js-shopping-list').on('click', '.js-item-delete', event => {
     console.log('`handleDeleteItemClicked` ran');
     const itemIndex = getItemIndexFromElement(event.currentTarget);
-    STORE.splice(itemIndex, 1);
+    STORE.items.splice(itemIndex, 1);
     renderShoppingList();
   });
 }
+
+
 
 
 
@@ -102,6 +133,7 @@ function handleShoppingList() {
   handleNewItemSubmit();
   handleItemCheckClicked();
   handleDeleteItemClicked();
+  handleItemToBeEdited();
 }
 
 // when the page loads, call `handleShoppingList`
